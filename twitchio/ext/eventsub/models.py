@@ -213,9 +213,9 @@ class ChannelBanData(EventData):
         self.permanent = self.permenant  # fix the spelling while keeping backwards compat
 
 
-class ChannelSubscribeData(EventData):
+class ChannelSubscriptionStartEndData(EventData):
     """
-    A Subscription event
+    A Subscription Start/End event
 
     Attributes
     -----------
@@ -1141,16 +1141,16 @@ class StreamOfflineData(EventData):
         self.broadcaster = _transform_user(client, data, "broadcaster_user")
 
 
-class UserAuthorizationRevokedData(EventData):
+class UserAuthorizationGrantedRevokedData(EventData):
     """
-    An Authorization Revokation event
+    An Authorization Granted/Revoked event
 
     Attributes
     -----------
     user: :class:`twitchio.PartialUser`
-        The user that has revoked authorization for your app
+        The user that has granted authorization for your app
     client_id: :class:`str`
-        The client id of the app that had its authorization revoked
+        The client id of the app that had its authorization granted or revoked
     """
 
     __slots__ = "client_id", "user"
@@ -1269,7 +1269,7 @@ class ChannelGoalEndData(EventData):
 _DataType = Union[
     ChannelBanData,
     ChannelUnbanData,
-    ChannelSubscribeData,
+    ChannelSubscriptionStartEndData,
     ChannelSubscriptionGiftData,
     ChannelSubscriptionMessageData,
     ChannelCheerData,
@@ -1290,7 +1290,7 @@ _DataType = Union[
     PredictionEndData,
     StreamOnlineData,
     StreamOfflineData,
-    UserAuthorizationRevokedData,
+    UserAuthorizationGrantedRevokedData,
     UserUpdateData,
 ]
 
@@ -1307,7 +1307,8 @@ class _SubscriptionTypes(metaclass=_SubTypesMeta):
     _name_map: Dict[str, str]
 
     follow = "channel.follow", 1, ChannelFollowData
-    subscription = "channel.subscribe", 1, ChannelSubscribeData
+    subscription = "channel.subscribe", 1, ChannelSubscriptionStartEndData
+    subscription_end = "channel.subscription.end", 1, ChannelSubscriptionStartEndData
     subscription_gift = "channel.subscription.gift", 1, ChannelSubscriptionGiftData
     subscription_message = "channel.subscription.message", 1, ChannelSubscriptionMessageData
     cheer = "channel.cheer", 1, ChannelCheerData
@@ -1352,7 +1353,8 @@ class _SubscriptionTypes(metaclass=_SubTypesMeta):
     stream_start = "stream.online", 1, StreamOnlineData
     stream_end = "stream.offline", 1, StreamOfflineData
 
-    user_authorization_revoke = "user.authorization.revoke", 1, UserAuthorizationRevokedData
+    user_authorization_grant = "user.authorization.grant", 1, UserAuthorizationGrantedRevokedData
+    user_authorization_revoke = "user.authorization.revoke", 1, UserAuthorizationGrantedRevokedData
 
     user_update = "user.update", 1, UserUpdateData
 
